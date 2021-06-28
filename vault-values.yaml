@@ -1,0 +1,13 @@
+global:
+  enabled: true
+server:
+  image:
+    repository: 'hashicorp/vault-enterprise'
+    tag: '1.8.0-rc1_ent'
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+  enterpriseLicense:
+    secretName: vault-ent-license
