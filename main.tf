@@ -41,6 +41,17 @@ resource "kubernetes_secret" "vault-ent-license" {
   }
 }
 
+resource "kubernetes_secret" "eks-creds" {
+  metadata {
+    name = "eks-creds"
+  }
+
+  data = {
+    VAULT_AWSKMS_SEAL_KEY_ID = data.terraform_remote_state.eks.outputs.aws_kms_key
+    AWS_REGION               = data.terraform_remote_state.eks.outputs.region
+  }
+}
+
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.cluster.endpoint

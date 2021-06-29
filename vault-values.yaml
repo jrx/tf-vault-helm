@@ -1,6 +1,15 @@
 global:
   enabled: true
 server:
+  extraEnvironmentVars:
+    VAULT_SEAL_TYPE: awskms
+  extraSecretEnvironmentVars:
+    - envName: AWS_REGION
+      secretName: eks-creds
+      secretKey: AWS_REGION
+    - envName: VAULT_AWSKMS_SEAL_KEY_ID
+      secretName: eks-creds
+      secretKey: VAULT_AWSKMS_SEAL_KEY_ID
   image:
     repository: 'hashicorp/vault-enterprise'
     tag: '1.8.0-rc1_ent'
