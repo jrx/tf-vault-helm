@@ -68,13 +68,44 @@ resource "helm_release" "vault" {
   name       = "vault"
   repository = "https://helm.releases.hashicorp.com"
   chart      = "vault"
-  version    = "0.13.0"
+  version    = "0.18.0"
 
   values = [
     file("${path.module}/vault-values.yaml")
   ]
 
+  set {
+    name  = "injector.enabled"
+    value = (var.injector == true ? true : false)
+  }
+
+  set {
+    name  = "csi.enabled"
+    value = (var.csi == true ? true : false)
+  }
+
   depends_on = [
+    kubernetes_secret.eks-creds,
     kubernetes_secret.vault-ent-license,
   ]
+}
+
+resource "helm_release" "csi" {
+  name       = "csi"
+  repository = "https://raw.githubusercontent.com/kubernetes-sigs/secrets-store-csi-driver/master/charts"
+  chart      = "secrets-store-csi-driver"
+  version    = "0.2.0"
+  count      = (var.csi == true ? 1 : 0)
+
+  # auto-rotation
+  # https://secrets-store-csi-driver.sigs.k8s.io/topics/secret-auto-rotation.html
+  set {
+    name  = "enableSecretRotation"
+    value = true
+  }
+
+  set {
+    name  = "rotationPollInterval"
+    value = "10s"
+  }
 }

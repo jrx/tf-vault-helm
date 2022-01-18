@@ -12,11 +12,38 @@ server:
       secretKey: VAULT_AWSKMS_SEAL_KEY_ID
   image:
     repository: 'hashicorp/vault-enterprise'
-    tag: '1.8.0-rc1_ent'
+    tag: '1.9.2-ent'
   ha:
     enabled: true
     replicas: 3
     raft:
       enabled: true
+      config: |
+        ui = true
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          telemetry {
+            unauthenticated_metrics_access = "true"
+          }
+        }
+        telemetry {
+          prometheus_retention_time = "24h"
+          disable_hostname = true
+        }
+        storage "raft" {
+          path = "/vault/data"
+          retry_join {
+            auto_join = "provider=k8s label_selector=\"app.kubernetes.io/name=vault,component=server\""
+            auto_join_scheme = "http"
+            auto_join_port = 8200
+          }
+        }
+        service_registration "kubernetes" {}
   enterpriseLicense:
     secretName: vault-ent-license
+injector:
+  enabled: true
+csi:
+  enabled: false
