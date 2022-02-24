@@ -68,10 +68,10 @@ resource "helm_release" "vault" {
   name       = "vault"
   repository = "https://helm.releases.hashicorp.com"
   chart      = "vault"
-  version    = "0.18.0"
+  version    = "0.19.0"
 
   values = [
-    file("${path.module}/vault-values.yaml")
+    file("${path.module}/vault-server.yaml")
   ]
 
   set {
@@ -92,9 +92,9 @@ resource "helm_release" "vault" {
 
 resource "helm_release" "csi" {
   name       = "csi"
-  repository = "https://raw.githubusercontent.com/kubernetes-sigs/secrets-store-csi-driver/master/charts"
+  repository = "https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts"
   chart      = "secrets-store-csi-driver"
-  version    = "0.2.0"
+  version    = "1.1.0"
   count      = (var.csi == true ? 1 : 0)
 
   # auto-rotation
