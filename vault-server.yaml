@@ -12,7 +12,7 @@ server:
       secretKey: VAULT_AWSKMS_SEAL_KEY_ID
   image:
     repository: 'hashicorp/vault-enterprise'
-    tag: '1.9.2-ent'
+    tag: '1.9.4-ent'
   ha:
     enabled: true
     replicas: 3
@@ -46,4 +46,4 @@ server:
 injector:
   enabled: true
 csi:
-  enabled: false
+  enabled: true

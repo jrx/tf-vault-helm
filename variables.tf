@@ -12,3 +12,7 @@ variable "csi" {
   description = "Deploy the CSI driver"
   default     = false
 }
+variable "csi-helm-version" {}
+variable "vault-helm-version" {}
+variable "vault-helm-filename" {}
+variable "vault-image" {}
