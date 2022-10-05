@@ -31,9 +31,16 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.eks_cluster.token
 }
 
+resource "kubernetes_namespace" "vault" {
+  metadata {
+    name = var.vault-helm-namespace
+  }
+}
+
 resource "kubernetes_secret" "vault-ent-license" {
   metadata {
-    name = "vault-ent-license"
+    name      = "vault-ent-license"
+    namespace = kubernetes_namespace.vault.id
   }
 
   data = {
@@ -43,7 +50,8 @@ resource "kubernetes_secret" "vault-ent-license" {
 
 resource "kubernetes_secret" "eks-creds" {
   metadata {
-    name = "eks-creds"
+    name      = "eks-creds"
+    namespace = kubernetes_namespace.vault.id
   }
 
   data = {
@@ -64,6 +72,7 @@ resource "helm_release" "vault" {
   name       = "vault"
   repository = "https://helm.releases.hashicorp.com"
   chart      = "vault"
+  namespace  = kubernetes_namespace.vault.id
   version    = var.vault-helm-version
 
   values = [
@@ -73,6 +82,11 @@ resource "helm_release" "vault" {
   set {
     name  = "server.image.tag"
     value = var.vault-image
+  }
+
+  set {
+    name  = "server.ha.replicas"
+    value = var.vault-replicas
   }
 
   set {
@@ -95,6 +109,7 @@ resource "helm_release" "csi" {
   name       = "csi"
   repository = "https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts"
   chart      = "secrets-store-csi-driver"
+  namespace  = kubernetes_namespace.vault.id
   version    = var.csi-helm-version
   count      = (var.csi == true ? 1 : 0)
 
