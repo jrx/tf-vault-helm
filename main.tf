@@ -125,3 +125,21 @@ resource "helm_release" "csi" {
     value = "10s"
   }
 }
+
+data "kubernetes_service_account" "vault" {
+  metadata {
+    name      = "vault"
+    namespace = kubernetes_namespace.vault.id
+  }
+
+  depends_on = [
+    helm_release.vault
+  ]
+}
+
+data "kubernetes_secret" "vault" {
+  metadata {
+    name      = data.kubernetes_service_account.vault.default_secret_name
+    namespace = kubernetes_namespace.vault.id
+  }
+}
