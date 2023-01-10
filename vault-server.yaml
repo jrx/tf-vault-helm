@@ -35,7 +35,7 @@ server:
         storage "raft" {
           path = "/vault/data"
           retry_join {
-            auto_join = "provider=k8s label_selector=\"app.kubernetes.io/name=vault,component=server\""
+            auto_join = "provider=k8s namespace=vault label_selector=\"app.kubernetes.io/name=vault,component=server\""
             auto_join_scheme = "http"
             auto_join_port = 8200
           }
