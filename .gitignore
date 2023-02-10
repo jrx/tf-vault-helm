@@ -11,3 +11,6 @@ override.tf.json
 backend.hcl
 .terraform.lock.hcl
 packer/vars.hcl
+*.key
+*.ca
+*.crt

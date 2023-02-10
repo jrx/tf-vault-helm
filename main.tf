@@ -48,6 +48,31 @@ resource "kubernetes_secret" "vault-ent-license" {
   }
 }
 
+resource "kubernetes_secret" "vault-server-tls" {
+  metadata {
+    name      = "vault-server-tls"
+    namespace = kubernetes_namespace.vault.id
+  }
+
+  data = {
+    "vault.key" = "${file("${path.module}/vault.key")}"
+    "vault.crt" = "${file("${path.module}/vault.crt")}"
+    "vault.ca"  = "${file("${path.module}/vault.ca")}"
+  }
+}
+
+resource "kubernetes_secret" "vault-injector-tls" {
+  metadata {
+    name      = "vault-injector-tls"
+    namespace = kubernetes_namespace.vault.id
+  }
+
+  data = {
+    "tls.key" = "${file("${path.module}/vault-injector.key")}"
+    "tls.crt" = "${file("${path.module}/vault-injector.crt")}"
+  }
+}
+
 resource "kubernetes_secret" "eks-creds" {
   metadata {
     name      = "eks-creds"
@@ -92,6 +117,11 @@ resource "helm_release" "vault" {
   set {
     name  = "injector.enabled"
     value = (var.injector == true ? true : false)
+  }
+
+  set {
+    name  = "injector.certs.caBundle"
+    value = base64encode(file("${path.module}/vault-injector.ca"))
   }
 
   set {
