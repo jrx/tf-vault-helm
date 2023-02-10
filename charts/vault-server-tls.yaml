@@ -29,6 +29,7 @@ server:
           tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
           tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
           tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.ca"
+          tls_disable_client_certs = "true"
           telemetry {
             unauthenticated_metrics_access = "true"
           }

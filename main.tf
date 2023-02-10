@@ -55,9 +55,9 @@ resource "kubernetes_secret" "vault-server-tls" {
   }
 
   data = {
-    "vault.key" = "${file("${path.module}/vault.key")}"
-    "vault.crt" = "${file("${path.module}/vault.crt")}"
-    "vault.ca"  = "${file("${path.module}/vault.ca")}"
+    "vault.key" = tls_private_key.vault-server.private_key_pem
+    "vault.crt" = kubernetes_certificate_signing_request_v1.vault-server.certificate
+    "vault.ca"  = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   }
 }
 
@@ -68,8 +68,8 @@ resource "kubernetes_secret" "vault-injector-tls" {
   }
 
   data = {
-    "tls.key" = "${file("${path.module}/vault-injector.key")}"
-    "tls.crt" = "${file("${path.module}/vault-injector.crt")}"
+    "tls.key" = tls_private_key.vault-injector.private_key_pem
+    "tls.crt" = kubernetes_certificate_signing_request_v1.vault-injector.certificate
   }
 }
 
@@ -121,7 +121,7 @@ resource "helm_release" "vault" {
 
   set {
     name  = "injector.certs.caBundle"
-    value = base64encode(file("${path.module}/vault-injector.ca"))
+    value = data.aws_eks_cluster.cluster.certificate_authority.0.data
   }
 
   set {
