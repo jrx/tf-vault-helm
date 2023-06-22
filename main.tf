@@ -156,11 +156,16 @@ resource "helm_release" "csi" {
   }
 }
 
-data "kubernetes_service_account" "vault" {
+resource "kubernetes_secret" "vault" {
   metadata {
     name      = "vault"
     namespace = kubernetes_namespace.vault.id
+    annotations = {
+      "kubernetes.io/service-account.name" = "vault"
+    }
   }
+
+  type = "kubernetes.io/service-account-token"
 
   depends_on = [
     helm_release.vault
@@ -169,7 +174,7 @@ data "kubernetes_service_account" "vault" {
 
 data "kubernetes_secret" "vault" {
   metadata {
-    name      = data.kubernetes_service_account.vault.default_secret_name
+    name      = kubernetes_secret.vault.metadata.0.name
     namespace = kubernetes_namespace.vault.id
   }
 }
