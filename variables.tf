@@ -17,6 +17,15 @@ variable "injector" {
   default     = false
 }
 
+variable "vso" {
+  type        = bool
+  description = "Deploy the Vault Secrets Operator"
+  default     = false
+}
+variable "vso-helm-version" {}
+variable "vso-helm-filename" {}
+variable "vso-helm-namespace" {}
+
 variable "csi" {
   type        = bool
   description = "Deploy the CSI driver"
