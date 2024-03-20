@@ -10,10 +10,10 @@ data "terraform_remote_state" "eks" {
   backend = "remote"
   config = {
     workspaces = {
-      name = "eks-dev"
+      name = "eks"
     }
     hostname     = "app.terraform.io"
-    organization = "jrx"
+    organization = "jrxhc"
   }
 }
 
