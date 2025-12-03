@@ -25,6 +25,11 @@ variable "vso" {
 variable "vso-helm-version" {}
 variable "vso-helm-filename" {}
 variable "vso-helm-namespace" {}
+variable "vso-csi" {
+  type        = bool
+  description = "Deploy the VSO CSI driver"
+  default     = false
+}
 
 variable "csi" {
   type        = bool
